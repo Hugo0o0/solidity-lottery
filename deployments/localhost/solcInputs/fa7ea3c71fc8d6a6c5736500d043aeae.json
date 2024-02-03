@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Lottery.sol": {
+      "content": "// SPDX-License-Identifier: SEE LICENSE IN LICENSE\r\npragma solidity ^0.8.0;\r\n\r\nerror Raffle__NotEnoughETH();\r\n\r\ncontract Lottery {\r\n    uint256 private immutable i_entranceFee;\r\n    address payable[] public players;\r\n\r\n    event RaffleEnter(address indexed player);\r\n\r\n    constructor(uint256 entranceFee) {\r\n        i_entranceFee = entranceFee;\r\n    }\r\n\r\n    function enterLottery() public payable {\r\n        if (msg.value < i_entranceFee) {\r\n            revert Raffle__NotEnoughETH();\r\n        }\r\n\r\n        players.push(payable(msg.sender));\r\n        emit RaffleEnter(msg.sender);\r\n    }\r\n\r\n    function getEntranceFee() public view returns (uint256) {\r\n        return i_entranceFee;\r\n    }\r\n\r\n    function getPlayer(uint256 index) public view returns (address payable) {\r\n        return players[index];\r\n    }\r\n}\r\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
