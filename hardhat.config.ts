@@ -12,6 +12,7 @@ const {
 } = process.env;
 
 const config: HardhatUserConfig = {
+  defaultNetwork: "hardhat",
   solidity: {
     compilers: [
       { version: "0.8.19" },

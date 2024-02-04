@@ -19,18 +19,17 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     address payable[] private s_players;
     address private s_recentWinner;
     LotteryState private s_lotteryState;
+    uint256 private s_lastTimestamp;
 
     uint256 private immutable i_entranceFee;
     VRFCoordinatorV2Interface private immutable i_vrfCoordinatorV2;
     bytes32 private immutable i_keyHash;
     uint64 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
+    uint256 private immutable i_interval;
 
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
     uint32 private constant NUM_WORDS = 1;
-
-    uint256 private immutable i_interval;
-    uint256 private s_lastTimestamp;
 
     event LotteryEnter(address indexed player);
     event RequestedLotteryWinner(uint256 indexed requestId);
@@ -73,8 +72,8 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
         emit LotteryEnter(msg.sender);
     }
 
-    function performUpkeep(bytes calldata /* performData */) external override {
-        (bool upkeepNeeded, ) = checkUpkeep("");
+    function performUpkeep(bytes calldata performData) external override {
+        (bool upkeepNeeded, ) = checkUpkeep(performData);
         if (!upkeepNeeded) {
             revert Lottery__UpkeepNotNeeded(
                 address(this).balance,
@@ -90,7 +89,6 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
             i_callbackGasLimit,
             NUM_WORDS
         );
-        emit RequestedLotteryWinner(requestId);
     }
 
     function fulfillRandomWords(
@@ -139,7 +137,7 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
         return s_recentWinner;
     }
 
-    function getRafleState() public view returns (LotteryState) {
+    function getLotteryState() public view returns (LotteryState) {
         return s_lotteryState;
     }
 
@@ -155,7 +153,27 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
         return s_lastTimestamp;
     }
 
-    function requestConfirmations() public pure returns (uint256) {
+    function getRequestConfirmations() public pure returns (uint256) {
         return REQUEST_CONFIRMATIONS;
+    }
+
+    function getVrfV2Coordinator() public view returns (address) {
+        return address(i_vrfCoordinatorV2);
+    }
+
+    function getKeyHash() public view returns (bytes32) {
+        return i_keyHash;
+    }
+
+    function getSubscriptionId() public view returns (uint64) {
+        return i_subscriptionId;
+    }
+
+    function getCallbackGasLimit() public view returns (uint32) {
+        return i_callbackGasLimit;
+    }
+
+    function getInterval() public view returns (uint256) {
+        return i_interval;
     }
 }
